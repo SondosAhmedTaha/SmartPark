@@ -2,7 +2,7 @@
 
 ## Project by:
 * **Sondos Taha**
-* **Yuval Zaidner**
+
 
 ---
 
