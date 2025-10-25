@@ -220,4 +220,3 @@ ps aux | grep -E "dashboard.py|python" | grep -v grep | head -n 60
 * Spots change color: **FREE → WAITING → OCCUPIED**, occasional **WRONG_PARK** (purple)
 * Departures free spots over time
 
-You’re all set! 🚦 If you want, we can tailor a Makefile or `justfile` to simplify all commands into `just up`, `just sim`, `just reset`.
