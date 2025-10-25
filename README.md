@@ -10,6 +10,20 @@
 
 An IoT-based smart parking management system that monitors parking spot occupancy in real-time using ESP32 microcontrollers, ultrasonic sensors, and Firebase Realtime Database. The system provides a live web dashboard to visualize parking availability and guides drivers to the nearest free spot using BFS path-finding algorithms.
 
+## Start here
+
+> 📘 **New here?** Before running any scripts, read the step-by-step onboarding guide in [`Documentation/HowToUse.md`](Documentation/HowToUse.md) to set up Firebase, start the dashboard, and launch the simulator confidently.
+>
+> 📂 Cloned the repository as **`IOT_PARKING`** (the name used in some course handouts)? Navigate to `IOT_PARKING/Documentation/HowToUse.md` after pulling to open the same onboarding guide.
+>
+> 📝 Prefer a printable version? Generate your own PDF from `Documentation/HowToUse.md` with your favorite Markdown-to-PDF tool.
+
+## Getting started quickly
+
+1. **Skim [`Documentation/HowToUse.md`](Documentation/HowToUse.md)** for the full first-time setup flow (virtualenv, Firebase credentials, dashboard + simulator commands, troubleshooting tips).
+2. Follow the **Quick Start – Server/Dashboard** section below if you just need a refresher on the key commands.
+3. When in doubt, come back to `Documentation/HowToUse.md`; it is the source of truth for running the project locally.
+
 **Key Features:**
 - Real-time parking spot monitoring with HC-SR04 ultrasonic sensors
 - RGB LED status indicators (Blue=Free, Orange=Waiting, Red=Occupied ,Purple=Wrong Spot)
@@ -42,6 +56,11 @@ An IoT-based smart parking management system that monitors parking spot occupanc
   - `diagrams/` — Wiring diagrams and system architecture
   - `poster/` — Project presentation poster
   - `screenshots/` — Dashboard and system screenshots
+* **Guides**:
+  - `Documentation/HowToUse.md` — Hands-on walkthrough for preparing your environment and running the dashboard + simulator.
+* **Study Materials** *(new!)*:
+  - `Study.md` — Full-color study guide that walks through every source file with line-by-line explanations.
+  - `Study.pdf` — Printable/offline PDF export of the same guide.
 
 ---
 
@@ -105,6 +124,8 @@ Cathode (-)      →  GND           →  Direct
 ---
 
 ## How to run the code
+
+> 📘 **First-time here?** Start with [`Documentation/HowToUse.md`](Documentation/HowToUse.md) for a step-by-step guide to preparing your environment, running the dashboard, and launching the simulator.
 
 ### Prerequisites
 - Python 3.11+ (tested with 3.13)
