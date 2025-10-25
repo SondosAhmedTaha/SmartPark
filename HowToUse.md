@@ -36,6 +36,8 @@ source .venv/bin/activate        # Windows: .venv\Scripts\activate
 
 # 2) Install dependencies
 pip install --upgrade pip
+pip install -r requirements.txt            # Root-level helpers (linting, docs, etc.)
+pip install -r Server/requirements.txt     # Core server + dashboard stack (Flask, firebase-admin, etc.)
 pip install -r requirements.txt  # Make sure requirements.txt exists and includes firebase-admin, flask/fastapi (dashboard), etc.
 
 # 3) Configure Firebase (example)
