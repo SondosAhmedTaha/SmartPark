@@ -1,0 +1,1131 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 30156 >>
+stream
+BT
+/F1 10 Tf
+14 TL
+72 720 Td
+( SmartPark Study Guide) Tj
+T*
+T*
+(Welcome to your colorful, study-friendly companion! Each section highlights a file from the SmartPark project, shows the source code \(within collapsible blocks\), and explains what every line or small group of lines is doing. Use the color-coded notes to memorize responsibilities quickly.) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Server/constants.py) Tj
+T*
+T*
+(Show code) Tj
+T*
+T*
+(python) Tj
+T*
+(ROOT_BRANCH = "SondosPark") Tj
+T*
+(STAT_FREE = "FREE") Tj
+T*
+(STAT_WAIT = "WAITING") Tj
+T*
+(STAT_OCC = "OCCUPIED") Tj
+T*
+T*
+T*
+T*
+(| Line\(s\) | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| 1 | Defines the Firebase Realtime Database root branch the backend writes under. |) Tj
+T*
+(| 2 | Symbol shared by services to tag a spot as free. |) Tj
+T*
+(| 3 | Symbol for the waiting/reserved state in queues and UI. |) Tj
+T*
+(| 4 | Symbol for an occupied spot. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Server/data_structures.py) Tj
+T*
+T*
+(Show code) Tj
+T*
+T*
+(python) Tj
+T*
+(""") Tj
+T*
+(Full source included for reference while studying.) Tj
+T*
+(""") Tj
+T*
+T*
+T*
+(python) Tj
+T*
+(from typing import Dict, Optional, Tuple, Callable) Tj
+T*
+(import random) Tj
+T*
+(from bisect import bisect_left, insort) Tj
+T*
+(from collections import deque) Tj
+T*
+T*
+(class SortedList:) Tj
+T*
+(    """A small sorted list with optional key function. Compatible with previous API.) Tj
+T*
+T*
+(    If key is provided, items are ordered by key\(item\). Internally stores) Tj
+T*
+(    tuples \(k, item\) when key is set to allow use of insort.) Tj
+T*
+(    """) Tj
+T*
+(    def __init__\(self, iterable=None, key: Optional[Callable] = None\):) Tj
+T*
+(        self._key = key) Tj
+T*
+(        self._list = []) Tj
+T*
+(        if iterable:) Tj
+T*
+(            for item in iterable:) Tj
+T*
+(                self.add\(item\)) Tj
+T*
+T*
+(    def _wrap\(self, value\):) Tj
+T*
+(        return \(self._key\(value\), value\) if self._key is not None else value) Tj
+T*
+T*
+(    def add\(self, value\):) Tj
+T*
+(        if self._key is None:) Tj
+T*
+(            insort\(self._list, value\)) Tj
+T*
+(        else:) Tj
+T*
+(            Ensure internal storage uses \(key, item\) tuples) Tj
+T*
+(            if self._list and not isinstance\(self._list[0], tuple\):) Tj
+T*
+(                self._list = [\(self._key\(v\), v\) for v in self._list]) Tj
+T*
+(            k = self._key\(value\)) Tj
+T*
+(            build keys list for bisect search to avoid comparing items directly) Tj
+T*
+(            keys = [kv[0] for kv in self._list]) Tj
+T*
+(            idx = bisect_left\(keys, k\)) Tj
+T*
+(            self._list.insert\(idx, \(k, value\)\)) Tj
+T*
+T*
+(    def remove\(self, value\):) Tj
+T*
+(        if self._key is None:) Tj
+T*
+(            idx = bisect_left\(self._list, value\)) Tj
+T*
+(            if idx != len\(self._list\) and self._list[idx] == value:) Tj
+T*
+(                self._list.pop\(idx\)) Tj
+T*
+(                return) Tj
+T*
+(            raise ValueError\(f"{value} not in SortedList"\)) Tj
+T*
+(        else:) Tj
+T*
+(            find by identity of stored item) Tj
+T*
+(            for i, \(k, item\) in enumerate\(self._list\):) Tj
+T*
+(                if item == value:) Tj
+T*
+(                    self._list.pop\(i\)) Tj
+T*
+(                    return) Tj
+T*
+(            raise ValueError\(f"{value} not in SortedList"\)) Tj
+T*
+T*
+(    def pop\(self, index=-1\):) Tj
+T*
+(        val = self._list.pop\(index\)) Tj
+T*
+(        return val[1] if self._key is not None else val) Tj
+T*
+T*
+(    def __len__\(self\):) Tj
+T*
+(        return len\(self._list\)) Tj
+T*
+T*
+(    def __getitem__\(self, idx\):) Tj
+T*
+(        val = self._list[idx]) Tj
+T*
+(        return val[1] if self._key is not None else val) Tj
+T*
+T*
+(    def __iter__\(self\):) Tj
+T*
+(        if self._key is None:) Tj
+T*
+(            return iter\(self._list\)) Tj
+T*
+(        else:) Tj
+T*
+(            return \(item for \(_, item\) in self._list\)) Tj
+T*
+T*
+(    def __contains__\(self, value\):) Tj
+T*
+(        if self._key is None:) Tj
+T*
+(            idx = bisect_left\(self._list, value\)) Tj
+T*
+(            return idx != len\(self._list\) and self._list[idx] == value) Tj
+T*
+(        else:) Tj
+T*
+(            return any\(item == value for \(_, item\) in self._list\)) Tj
+T*
+T*
+(    def index\(self, value\):) Tj
+T*
+(        if self._key is None:) Tj
+T*
+(            idx = bisect_left\(self._list, value\)) Tj
+T*
+(            if idx != len\(self._list\) and self._list[idx] == value:) Tj
+T*
+(                return idx) Tj
+T*
+(            raise ValueError\(f"{value} not in SortedList"\)) Tj
+T*
+(        else:) Tj
+T*
+(            for i, \(_, item\) in enumerate\(self._list\):) Tj
+T*
+(                if item == value:) Tj
+T*
+(                    return i) Tj
+T*
+(            raise ValueError\(f"{value} not in SortedList"\)) Tj
+T*
+T*
+(class Spot:) Tj
+T*
+(    """Represents a parking spot with coordinates, distance, and status""") Tj
+T*
+T*
+(    def __init__\(self, row: int, col: int, distance: int\):) Tj
+T*
+(        RTDB fields) Tj
+T*
+(        self.status = "FREE") Tj
+T*
+(        self.waiting_car_id = "-") Tj
+T*
+(        self.seen_car_id = "-") Tj
+T*
+(        self.distance_from_entry = distance) Tj
+T*
+T*
+(        Local-only field for efficiency \(matches RTDB key format\)) Tj
+T*
+(        use plain 'row,col' key format to match event_generator and RTDB child naming) Tj
+T*
+(        self.spot_id = f"{row},{col}") Tj
+T*
+T*
+(    RTDB sync methods removed) Tj
+T*
+T*
+(class Car:) Tj
+T*
+(    """Represents a car with plate ID, status, and parking information""") Tj
+T*
+T*
+(    def __init__\(self, plate_id: str\):) Tj
+T*
+(        RTDB fields) Tj
+T*
+(        self.plate_id = plate_id) Tj
+T*
+(        self.status = "waiting"  waiting, parked, parked_illegally) Tj
+T*
+(        self.allocated_spot = "-") Tj
+T*
+(        self.timestamp = "") Tj
+T*
+T*
+(        Local-only fields) Tj
+T*
+(        self.actual_spot = None  Where car actually parked \(if different from allocated\)) Tj
+T*
+T*
+(    RTDB sync methods removed) Tj
+T*
+T*
+(class ParkingLot:) Tj
+T*
+(    """Main class that manages all parking lot data structures and operations""") Tj
+T*
+T*
+(    def __init__\(self\):) Tj
+T*
+(        AVL tree \(SortedList\) of free spots, ordered by distance from entry) Tj
+T*
+(        support key to order by Spot.distance_from_entry) Tj
+T*
+(        self.free_spots = SortedList\(key=lambda spot: spot.distance_from_entry\)) Tj
+T*
+T*
+(        Hash tables for O\(1\) lookups) Tj
+T*
+(        self.spot_lookup = {}  spot_id -> Spot object) Tj
+T*
+(        self.car_lookup = {}   car_plate -> Car object) Tj
+T*
+(        Current waiting pair \(car allocated to spot but not yet parked\)) Tj
+T*
+(        self.waiting_pair = None  {"car_id": str, "spot_id": str} or None) Tj
+T*
+T*
+(        Hash table of occupied spots: spot_id -> car_id \(O\(1\) operations\)) Tj
+T*
+(        self.occupied_spots_with_cars = {}) Tj
+T*
+T*
+(        Variable to hold the time we saved \(e.g., last state save timestamp\)) Tj
+T*
+(        self.saved_time = None) Tj
+T*
+(        self.isFull = False) Tj
+T*
+T*
+(    Basic data operations) Tj
+T*
+(    def add_spot\(self, spot\):) Tj
+T*
+(        """Add spot to both free_spots list and spot_lookup hash""") Tj
+T*
+(        self.free_spots.add\(spot\)) Tj
+T*
+(        self.spot_lookup[spot.spot_id] = spot) Tj
+T*
+T*
+(    def add_car\(self, car\):) Tj
+T*
+(        """Add car to car_lookup hash""") Tj
+T*
+(        self.car_lookup[car.plate_id] = car) Tj
+T*
+T*
+(    def get_closest_free_spot\(self\):) Tj
+T*
+(        """Return closest free spot \(first element\) or None if empty""") Tj
+T*
+(        return self.free_spots[0] if self.free_spots else None) Tj
+T*
+T*
+(    def get_time_saved\(self\):) Tj
+T*
+(        """Get the time saved based on the distance difference between the farthest and closest free spots.""") Tj
+T*
+(        if len\(self.free_spots\)  Tuple[int, int]:) Tj
+T*
+(        """Parse spot_id formatted as '\(row,col\)' or 'row,col' into \(row, col\) ints.""") Tj
+T*
+(        s = spot_id.strip\(\)) Tj
+T*
+(        if s.startswith\('\('\) and s.endswith\('\)'\):) Tj
+T*
+(            s = s[1:-1]) Tj
+T*
+(        parts = s.split\(','\)) Tj
+T*
+(        return int\(parts[0]\), int\(parts[1]\)) Tj
+T*
+T*
+(    def _format_coord_tuple\(self, row: int, col: int, with_paren: bool = False\) -> str:) Tj
+T*
+(        if with_paren:) Tj
+T*
+(            return f"\({row},{col}\)") Tj
+T*
+(        return f"{row},{col}") Tj
+T*
+T*
+(    def find_closest\(self, gate_row: int = 0, gate_col: int = 2\) -> Optional[Tuple[int, int]]:) Tj
+T*
+(        """Find closest FREE spot to the gate using BFS on the grid of spots.) Tj
+T*
+T*
+(        Returns \(row, col\) or None if no free spots. The return shape matches the) Tj
+T*
+(        rest of the code and the UI which uses 'row,col' string keys.) Tj
+T*
+(        """) Tj
+T*
+(        Build set of free positions from spot_lookup) Tj
+T*
+(        free_positions = set\(\)) Tj
+T*
+(        for sid, spot in self.spot_lookup.items\(\):) Tj
+T*
+(            if getattr\(spot, 'status', None\) == 'FREE':) Tj
+T*
+(                row, col = self._parse_spot_coords\(sid\)) Tj
+T*
+(                free_positions.add\(\(row, col\)\)) Tj
+T*
+T*
+(        if not free_positions:) Tj
+T*
+(            return None) Tj
+T*
+T*
+(        BFS from gate) Tj
+T*
+(        q = deque\(\)) Tj
+T*
+(        start = \(gate_row, gate_col\)) Tj
+T*
+(        q.append\(start\)) Tj
+T*
+(        seen = {start}) Tj
+T*
+T*
+(        neighbor deltas: up/down/left/right) Tj
+T*
+(        deltas = [\(-1, 0\), \(1, 0\), \(0, -1\), \(0, 1\)]) Tj
+T*
+T*
+(        while q:) Tj
+T*
+(            r, c = q.popleft\(\)) Tj
+T*
+(            if \(r, c\) in free_positions:) Tj
+T*
+(                return \(row, col\) to match the 'row,col' key format used by the DB) Tj
+T*
+(                return \(r, c\)) Tj
+T*
+(            Collect potential neighbors, then sort deterministically by \(col, row\)) Tj
+T*
+(            neighbors = []) Tj
+T*
+(            for dr, dc in deltas:) Tj
+T*
+(                nr, nc = r + dr, c + dc) Tj
+T*
+(                if \(nr, nc\) in seen:) Tj
+T*
+(                    continue) Tj
+T*
+(                only explore coordinates that exist in the grid \(either free or occupied\)) Tj
+T*
+(                if \(nr, nc\) in free_positions or any\(\(nr, nc\) == self._parse_spot_coords\(sid\) for sid in self.spot_lookup\):) Tj
+T*
+(                    neighbors.append\(\(nr, nc\)\)) Tj
+T*
+T*
+(            sort neighbors so tie-breaker prefers lower column, then lower row) Tj
+T*
+(            neighbors.sort\(key=lambda rc: \(rc[1], rc[0]\)\)) Tj
+T*
+(            for nr, nc in neighbors:) Tj
+T*
+(                seen.add\(\(nr, nc\)\)) Tj
+T*
+(                q.append\(\(nr, nc\)\)) Tj
+T*
+T*
+(        return None) Tj
+T*
+T*
+(    def allocate_closest_spot\(self, car_id: str, gate_row: int = 0, gate_col: int = 2\) -> Optional[str]:) Tj
+T*
+(        """Allocate the closest free spot \(BFS\) for car_id.) Tj
+T*
+T*
+(        Returns the allocated spot id as 'row,col' string \(no parentheses\) or None.) Tj
+T*
+(        Also sets waiting_pair and removes spot from free_spots.) Tj
+T*
+(        """) Tj
+T*
+(        coord = self.find_closest\(gate_row, gate_col\)) Tj
+T*
+(        if coord is None:) Tj
+T*
+(            return None) Tj
+T*
+(        find_closest now returns \(row, col\)) Tj
+T*
+(        row, col = coord) Tj
+T*
+(        our spot_lookup keys use '\(row,col\)') Tj
+T*
+(        key_paren = self._format_coord_tuple\(row, col, with_paren=True\)) Tj
+T*
+(        key_plain = self._format_coord_tuple\(row, col, with_paren=False\)) Tj
+T*
+(        spot = self.spot_lookup.get\(key_paren\) or self.spot_lookup.get\(f"\({row},{col}\)"\)) Tj
+T*
+(        if spot is None:) Tj
+T*
+(            try the plain key) Tj
+T*
+(            spot = self.spot_lookup.get\(key_plain\)) Tj
+T*
+(        if spot is None:) Tj
+T*
+(            return None) Tj
+T*
+T*
+(        remove from free_spots if present and mark as waiting) Tj
+T*
+(        try:) Tj
+T*
+(            mark in-memory) Tj
+T*
+(            spot.status = 'WAITING') Tj
+T*
+(            self.remove_spot_from_free\(spot\)) Tj
+T*
+(        except Exception:) Tj
+T*
+(            pass) Tj
+T*
+T*
+(        set waiting pair and return plain key 'row,col') Tj
+T*
+(        self.set_waiting_pair\(car_id, key_plain\)) Tj
+T*
+(        print\(f"[ParkingLot] Allocated spot {key_plain} to car {car_id}; free_spots_count={len\(self.free_spots\)}"\)) Tj
+T*
+(        return key_plain) Tj
+T*
+T*
+T*
+T*
+(| Line\(s\) | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| 1-4 | Imports modules needed for typing, randomness, maintaining sorted order, and BFS queues. |) Tj
+T*
+(| 6-33 | Defines the `SortedList` container. The constructor stores the optional key function, seeds initial items, and maintains sorted order when adding elements \(lines 22-33\). |) Tj
+T*
+(| 35-48 | Removal logic handles both keyed and unkeyed storage, raising descriptive errors if the value is absent. |) Tj
+T*
+(| 50-83 | Utility dunder methods \(`pop`, `__len__`, `__getitem__`, `__iter__`, `__contains__`, `index`\) provide list-like ergonomics while respecting keyed storage. |) Tj
+T*
+(| 86-100 | `Spot` class constructor sets RTDB-facing fields and the canonical ID format. |) Tj
+T*
+(| 102-115 | `Car` class tracks RTDB fields \(status, allocated spot, timestamp\) and local bookkeeping \(`actual_spot`\). |) Tj
+T*
+(| 117-137 | `ParkingLot` constructor initializes sorted collections, lookup tables, and flags indicating overall fullness. |) Tj
+T*
+(| 139-157 | Simple CRUD helpers for spots, cars, and derived metrics like the distance-based "time saved" heuristic. |) Tj
+T*
+(| 160-183 | Helpers that remove or re-add spots from the sorted free list, accepting either objects or spot IDs. |) Tj
+T*
+(| 185-205 | Lookup and waiting-pair management utilities wrap the dictionaries holding the latest car/spot assignments. |) Tj
+T*
+(| 207-223 | Occupancy tracking keeps a hash map of spotcar mappings and surfaces convenience accessors. |) Tj
+T*
+(| 224-237 | Coordinate conversion helpers ensure consistent `\(row,col\)` formatting between Firebase and in-memory code. |) Tj
+T*
+(| 238-284 | Breadth-first search that finds the closest free spot to the gate while exploring only valid coordinates. |) Tj
+T*
+(| 286-318 | Allocation routine that calls BFS, updates state to `WAITING`, removes the spot from the free pool, records the waiting pair, and prints a debug line. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Server/firebase_init.py) Tj
+T*
+T*
+(Show code) Tj
+T*
+T*
+(python) Tj
+T*
+(import json) Tj
+T*
+(import os) Tj
+T*
+(from typing import Optional) Tj
+T*
+T*
+(import firebase_admin) Tj
+T*
+(from firebase_admin import credentials, db) Tj
+T*
+(import requests) Tj
+T*
+T*
+(DEFAULT_DB_SUFFIX = "-default-rtdb") Tj
+T*
+(DEFAULT_REGION = "asia-southeast1") Tj
+T*
+T*
+T*
+(class FirebaseInitializationError\(Exception\):) Tj
+T*
+(    """Raised when Firebase cannot be initialized due to configuration issues.""") Tj
+T*
+T*
+T*
+(def get_default_db_url\(project_id: str, region: str = DEFAULT_REGION\) -> str:) Tj
+T*
+(    """Construct the default RTDB URL for the given project and region.""") Tj
+T*
+(    return f"https://{project_id}-{region}.{project_id}.firebaseio.com") Tj
+T*
+T*
+T*
+(def _probe_database_url\(db_url: str\) -> bool:) Tj
+T*
+(    """Probe the RTDB URL to confirm it exists/accepts requests.""") Tj
+T*
+(    try:) Tj
+T*
+(        response = requests.get\(db_url + "/.settings/rules.json", timeout=5\)) Tj
+T*
+(        return response.ok) Tj
+T*
+(    except requests.RequestException:) Tj
+T*
+(        return False) Tj
+T*
+T*
+T*
+(def initialize_firebase\(cred_path: Optional[str] = None, db_url: Optional[str] = None\):) Tj
+T*
+(    """Initialize Firebase admin SDK and return the RTDB reference.""") Tj
+T*
+(    if firebase_admin._apps:) Tj
+T*
+(        return db.reference\('/'\)) Tj
+T*
+T*
+(    if cred_path is None:) Tj
+T*
+(        cred_path = os.environ.get\('GOOGLE_APPLICATION_CREDENTIALS'\)) Tj
+T*
+T*
+(    if cred_path and os.path.exists\(cred_path\):) Tj
+T*
+(        cred = credentials.Certificate\(cred_path\)) Tj
+T*
+(    else:) Tj
+T*
+(        raise FirebaseInitializationError\("Firebase credential file not found. Set GOOGLE_APPLICATION_CREDENTIALS."\)) Tj
+T*
+T*
+(    if db_url is None:) Tj
+T*
+(        db_url = os.environ.get\('FIREBASE_DATABASE_URL'\)) Tj
+T*
+T*
+(    if not db_url:) Tj
+T*
+(        with open\(cred_path, 'r', encoding='utf-8'\) as f:) Tj
+T*
+(            service_account = json.load\(f\)) Tj
+T*
+(        project_id = service_account.get\('project_id'\)) Tj
+T*
+(        if not project_id:) Tj
+T*
+(            raise FirebaseInitializationError\("Service account file missing project_id."\)) Tj
+T*
+(        db_url = get_default_db_url\(project_id\)) Tj
+T*
+(        if not _probe_database_url\(db_url\):) Tj
+T*
+(            alt_url = f"https://{project_id}.firebaseio.com") Tj
+T*
+(            if _probe_database_url\(alt_url\):) Tj
+T*
+(                db_url = alt_url) Tj
+T*
+(            else:) Tj
+T*
+(                raise FirebaseInitializationError\("Could not determine a valid Firebase RTDB URL."\)) Tj
+T*
+T*
+(    firebase_admin.initialize_app\(credentials.Certificate\(cred_path\), {) Tj
+T*
+(        'databaseURL': db_url) Tj
+T*
+(    }\)) Tj
+T*
+(    return db.reference\('/'\)) Tj
+T*
+T*
+T*
+T*
+(| Line\(s\) | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| 1-7 | Load standard libs plus Firebase Admin SDK and `requests` for network probing. |) Tj
+T*
+(| 9-10 | Default constants for building RTDB URLs. |) Tj
+T*
+(| 13-14 | Custom exception clarifies initialization failures. |) Tj
+T*
+(| 17-19 | Helper builds the default RTDB URL from a service account project ID. |) Tj
+T*
+(| 22-28 | `_probe_database_url` hits the RTDB rules endpoint to check reachability, swallowing network errors gracefully. |) Tj
+T*
+(| 31-64 | `initialize_firebase` lazily initializes the SDK, locating credentials, deriving a database URL when not provided, probing for fallback URLs, and finally bootstrapping the app before returning a root database reference. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Server/Init_Park.py) Tj
+T*
+T*
+(Show code) Tj
+T*
+T*
+(python) Tj
+T*
+(from firebase_admin import db) Tj
+T*
+T*
+(from .constants import ROOT_BRANCH, STAT_FREE) Tj
+T*
+T*
+T*
+(def initialize_parking_lot\(rows: int = 10, cols: int = 5, default_distance: int = 3\):) Tj
+T*
+(    """Seed the RTDB with a grid of empty parking spots.""") Tj
+T*
+(    ref = db.reference\(f"/{ROOT_BRANCH}/SPOTS"\)) Tj
+T*
+(    spots = {}) Tj
+T*
+(    for row in range\(rows\):) Tj
+T*
+(        for col in range\(cols\):) Tj
+T*
+(            spot_id = f"{row},{col}") Tj
+T*
+(            spots[spot_id] = {) Tj
+T*
+(                "status": STAT_FREE,) Tj
+T*
+(                "waitingCarId": "-",) Tj
+T*
+(                "seenCarId": "-",) Tj
+T*
+(                "distanceFromEntry": default_distance,) Tj
+T*
+(                "lastUpdated": "") Tj
+T*
+(            }) Tj
+T*
+(    ref.set\(spots\)) Tj
+T*
+T*
+T*
+T*
+(| Line\(s\) | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| 1 | Imports RTDB reference builder from the Firebase Admin SDK. |) Tj
+T*
+(| 3 | Shares constants for consistent branch names and spot statuses. |) Tj
+T*
+(| 6-18 | Creates a rectangular grid of default spot documents and writes them to `/SondosPark/SPOTS`, seeding the database for demos/tests. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Server/event_generator.py) Tj
+T*
+T*
+(Show imports) Tj
+T*
+T*
+(python) Tj
+T*
+(import random) Tj
+T*
+(from typing import Optional) Tj
+T*
+T*
+(from firebase_admin import db) Tj
+T*
+T*
+(from .constants import ROOT_BRANCH, STAT_FREE, STAT_OCC, STAT_WAIT) Tj
+T*
+(from .data_structures import ParkingLot, Spot) Tj
+T*
+T*
+T*
+T*
+(| Line\(s\) | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| 1-2 | Randomness powers simulated arrivals/departures; typing clarifies optional returns. |) Tj
+T*
+(| 4 | Gains access to the RTDB. |) Tj
+T*
+(| 6-7 | Pulls shared constants and the in-memory data structures for managing allocations. |) Tj
+T*
+T*
+T*
+(Event generator functions) Tj
+T*
+T*
+(python) Tj
+T*
+(def _spot_ref\(\) -> db.Reference:) Tj
+T*
+(    return db.reference\(f"/{ROOT_BRANCH}/SPOTS"\)) Tj
+T*
+T*
+T*
+(def _car_ref\(\) -> db.Reference:) Tj
+T*
+(    return db.reference\(f"/{ROOT_BRANCH}/CARS"\)) Tj
+T*
+T*
+T*
+(python) Tj
+T*
+(def load_parking_lot\(\) -> ParkingLot:) Tj
+T*
+(    """Hydrate a ParkingLot model from Firebase.""") Tj
+T*
+(    lot = ParkingLot\(\)) Tj
+T*
+(    spots_snapshot = _spot_ref\(\).get\(\) or {}) Tj
+T*
+(    for spot_id, data in spots_snapshot.items\(\):) Tj
+T*
+(        row, col = lot._parse_spot_coords\(spot_id\)) Tj
+T*
+(        spot = Spot\(row, col, data.get\('distanceFromEntry', 0\)\)) Tj
+T*
+(        spot.status = data.get\('status', STAT_FREE\)) Tj
+T*
+(        spot.waiting_car_id = data.get\('waitingCarId', '-'\)) Tj
+T*
+(        spot.seen_car_id = data.get\('seenCarId', '-'\)) Tj
+T*
+(        lot.add_spot\(spot\)) Tj
+T*
+(        if spot.status == STAT_FREE:) Tj
+T*
+(            lot.add_spot_to_free\(spot\)) Tj
+T*
+(        else:) Tj
+T*
+(            lot.add_occupied_spot\(spot.spot_id, data.get\('waitingCarId', '-'\)\)) Tj
+T*
+(    return lot) Tj
+T*
+T*
+T*
+(python) Tj
+T*
+(def simulate_car_arrival\(lot: ParkingLot, car_id: str\) -> Optional[str]:) Tj
+T*
+(    allocated = lot.allocate_closest_spot\(car_id\)) Tj
+T*
+(    if allocated is None:) Tj
+T*
+(        return None) Tj
+T*
+(    _car_ref\(\).child\(car_id\).update\({) Tj
+T*
+(        "status": "waiting",) Tj
+T*
+(        "allocatedSpot": allocated,) Tj
+T*
+(    }\)) Tj
+T*
+(    _spot_ref\(\).child\(allocated\).update\({) Tj
+T*
+(        "status": STAT_WAIT,) Tj
+T*
+(        "waitingCarId": car_id,) Tj
+T*
+(    }\)) Tj
+T*
+(    return allocated) Tj
+T*
+T*
+T*
+(python) Tj
+T*
+(def confirm_parking\(lot: ParkingLot, car_id: str, spot_id: str\):) Tj
+T*
+(    lot.clear_waiting_pair\(\)) Tj
+T*
+(    lot.add_occupied_spot\(spot_id, car_id\)) Tj
+T*
+(    _car_ref\(\).child\(car_id\).update\({) Tj
+T*
+(        "status": "parked",) Tj
+T*
+(        "allocatedSpot": spot_id,) Tj
+T*
+(    }\)) Tj
+T*
+(    _spot_ref\(\).child\(spot_id\).update\({) Tj
+T*
+(        "status": STAT_OCC,) Tj
+T*
+(        "waitingCarId": "-",) Tj
+T*
+(    }\)) Tj
+T*
+T*
+T*
+(python) Tj
+T*
+(def simulate_departure\(lot: ParkingLot, car_id: str, spot_id: str\):) Tj
+T*
+(    lot.remove_occupied_spot\(spot_id\)) Tj
+T*
+(    spot = lot.get_spot\(spot_id\)) Tj
+T*
+(    if spot:) Tj
+T*
+(        spot.status = STAT_FREE) Tj
+T*
+(        lot.add_spot_to_free\(spot\)) Tj
+T*
+(    _car_ref\(\).child\(car_id\).delete\(\)) Tj
+T*
+(    _spot_ref\(\).child\(spot_id\).update\({) Tj
+T*
+(        "status": STAT_FREE,) Tj
+T*
+(        "waitingCarId": "-",) Tj
+T*
+(    }\)) Tj
+T*
+T*
+T*
+T*
+(| Line\(s\) | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| 9-15 | `_spot_ref` and `_car_ref` centralize Firebase paths. |) Tj
+T*
+(| 18-33 | `load_parking_lot` rebuilds the `ParkingLot` object from RTDB snapshots, ensuring free/occupied sets match remote data. |) Tj
+T*
+(| 36-48 | `simulate_car_arrival` reserves a spot, updates car + spot nodes, and returns the assigned `row,col`. |) Tj
+T*
+(| 51-61 | `confirm_parking` finalizes WAITING  OCCUPIED transitions for a car. |) Tj
+T*
+(| 64-76 | `simulate_departure` releases a spot, deletes the car node, and returns the spot to the free pool. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Server/dashboard.py) Tj
+T*
+(This Flask module imports Flask/Jinja helpers, initializes the app, loads the current lot snapshot on startup, and exposes two endpoints:) Tj
+T*
+T*
+(| Line\(s\) | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| 1-7 | Import Flask, `render_template`, `jsonify`, datetime utilities, Firebase initialization, and the parking lot data structures. |) Tj
+T*
+(| 10-24 | `create_app` configures static/template folders and initializes Firebase before returning an app instance. |) Tj
+T*
+(| 27-57 | `/` route renders `index.html`, injecting timestamps for cache-busting the CSS/JS assets. |) Tj
+T*
+(| 60-115 | `/api/status` builds a JSON payload summarizing each spot, waiting car, closest free spot \(via BFS\), and overall counts/flags used by the front-end poller. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Server/RTDB_listener.py) Tj
+T*
+(| Line\(s\) | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| 1-12 | Import Firebase Admin, logging helpers, constants, and the parking lot model. |) Tj
+T*
+(| 15-47 | `start_listeners` ensures Firebase is initialized, creates a `ParkingLot`, and attaches stream listeners to `/SPOTS` and `/CARS`. |) Tj
+T*
+(| 50-95 | Spot listener reacts to state changes, updating the in-memory model and optionally auto-promoting WAITING  OCCUPIED. |) Tj
+T*
+(| 98-140 | Car listener watches arrival confirmation flags and cleans up car nodes when departures are detected. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Server/simulation_sondos.py) Tj
+T*
+(| Line\(s\) | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| 1-35 | Imports Firebase helpers, time utilities, CLI prompts, and the event generator/data structures. |) Tj
+T*
+(| 38-114 | Utility functions to wipe/reset the database, migrate legacy nodes, and backup/restore spot data. |) Tj
+T*
+(| 117-205 | Core simulation logic: enqueue arrivals, auto-allocate spots, simulate wrong-spot overrides, and manage departure timing. |) Tj
+T*
+(| 208-260 | Command-line driven main loop: parse args, initialize Firebase, and run continuous or finite simulations with graceful exit handling. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Tools/setup_simulation.py) Tj
+T*
+(| Line\(s\) | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| 1-22 | Imports `argparse`, Firebase init helpers, listener starter, and logging utilities. |) Tj
+T*
+(| 25-83 | CLI command that validates Firebase credentials, optionally initializes the RTDB, and spins up listeners for quick smoke testing before running full simulations. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# ESP32/SpotNode/SpotNode.ino) Tj
+T*
+(| Section | Explanation |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| Includes | Pulls WiFiManager, Firebase Arduino Client, ultrasonic sensor handling, and RGB LED support libraries. |) Tj
+T*
+(| Global constants | Configure pins, Firebase credentials placeholders, sensor thresholds \(`THRESH_ENTER/EXIT`\), and status color mappings. |) Tj
+T*
+(| `setup\(\)` | Initializes serial logging, configures the RGB LED, launches WiFiManager for credential capture, connects to Firebase, and registers stream callbacks. |) Tj
+T*
+(| `loop\(\)` | Repeatedly measures ultrasonic distance, debounces transitions with hysteresis, updates Firebase when state changes, and animates the LED + on-board logging. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Front-end Assets) Tj
+T*
+(| File | Highlights |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| `Server/static/js/app.js` | Polls `/api/status`, updates the DOM grid, animates arrivals, shows timestamps, and handles the parking-full banner. Each function \(`fetchStatus`, `renderGrid`, `updateClosest`\) is annotated with colorful callouts in the full guide. |) Tj
+T*
+(| `Server/static/css/styles.css` | Defines the dashboard layout, responsive grid sizing, color palette for FREE/WAITING/OCCUPIED, banner animations, and typography. Comments in the guide explain each section. |) Tj
+T*
+(| `Server/template/index.html` | Provides the dashboard structureheader, parking grid, status cards, and script/style includes with cache-busting query params. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# UNIT TESTS) Tj
+T*
+(| File | Focus |) Tj
+T*
+(| ---------------------------------------- | ---------------------------------------- |) Tj
+T*
+(| `UNIT TESTS/Server_Tests/test_parkinglot_bfs.py` | Validates BFS allocation order, verifying that the nearest free spot is chosen and state tables update correctly. |) Tj
+T*
+(| `UNIT TESTS/Server_Tests/test_event_generator.py` | Exercises arrival/departure helpers with Firebase mocks. |) Tj
+T*
+(| `UNIT TESTS/Server_Tests/test_arrival_then_parked.py` | Ensures WAITING  OCCUPIED transitions update both RTDB and in-memory data consistently. |) Tj
+T*
+(| `UNIT TESTS/Server_Tests/test_spot_lifecycle.py` | Simulates a full spot lifecycle \(free  waiting  occupied  free\). |) Tj
+T*
+(| `UNIT TESTS/Server_Tests/test_integration_firebase.py` | Smoke test for Firebase initialization + RTDB reads. |) Tj
+T*
+(| `UNIT TESTS/Server_Tests/simulate_car_departure.py` | CLI-style script verifying departure cleanup logic. |) Tj
+T*
+(| `UNIT TESTS/Server_Tests/conftest.py` | Houses reusable fixtures that mock Firebase interactions. |) Tj
+T*
+(| `UNIT TESTS/ESP32_Tests/*.ino` | Standalone sketches to verify WiFi, Firebase, ultrasonic, and RGB LED behavior individually. |) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Documentation & Assets) Tj
+T*
+(All Markdown guides \(`Documentation/*.md`\) explain setup, calibration, troubleshooting, and error handling. The study guide summarizes the purpose of each section so you can answer process-related questions.) Tj
+T*
+T*
+(----------------------------------------) Tj
+T*
+T*
+(# Study.pdf) Tj
+T*
+(A matching PDF \(`Study.pdf`\) mirrors this markdown content so you can read offline or annotate a printed copy.) Tj
+T*
+T*
+(Happy studying!) Tj
+T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000030450 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+30520
+%%EOF
